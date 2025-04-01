@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
 
 import { Inter } from "@next/font/google";
 
@@ -25,9 +26,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body
+        className={`${inter.variable} antialiased min-h-screen flex flex-col`}
+      >
         <Header />
-        {children}
+        <div className="mt-12 mb-12">
+          {" "}
+          {/* Adds 50px margin (12 in Tailwind) above and below */}
+          {children}
+        </div>
+        <Footer />
       </body>
     </html>
   );

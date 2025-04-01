@@ -1,7 +1,7 @@
 export const links = [
   {
-    name: "Advertisement",
-    path: "/advertisement",
+    name: "Price Analysis",
+    path: "/price-analysis",
   },
   {
     name: "Create",

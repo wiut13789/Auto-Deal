@@ -3,7 +3,7 @@ import { Navbar } from "../Navbar";
 
 export const Header = () => {
   return (
-    <div className="py-8 shadow-md">
+    <div className="py-[21px] shadow-md">
       <div className="container">
         <div className="flex justify-between">
           <div>
