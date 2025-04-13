@@ -98,9 +98,6 @@ const App: React.FC = () => {
               <CardTitle className="text-2xl font-bold text-gray-800">
                 Car Value Calculator
               </CardTitle>
-              <Badge variant="outline" className="text-gray-600">
-                Today: April 2, 2025
-              </Badge>
             </div>
           </CardHeader>
           <CardContent className="pt-6 pb-8">

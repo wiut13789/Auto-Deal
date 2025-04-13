@@ -17,6 +17,9 @@ const Create: React.FC = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("950 000");
   const [activeTab, setActiveTab] = useState("edit");
+  const [predictedPrice, setPredictedPrice] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResult, setShowResult] = useState(false);
 
   const colors = [
     { id: "black", color: "bg-black" },
@@ -51,13 +54,13 @@ const Create: React.FC = () => {
             >
               Редактирование
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="preview"
               className="data-[state=active]:bg-green-50 data-[state=active]:text-green-600 !rounded-button"
               onClick={() => setActiveTab("preview")}
             >
               Предпросмотр
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="edit" className="mt-0">
@@ -164,7 +167,7 @@ const Create: React.FC = () => {
                             </Button>
                           </div>
                         </div>
-                        <div>
+                        {/* <div>
                           <Label className="text-sm text-gray-500 mb-1">
                             Привод
                           </Label>
@@ -182,7 +185,7 @@ const Create: React.FC = () => {
                               Задний
                             </Button>
                           </div>
-                        </div>
+                        </div> */}
                         <div>
                           <Label className="text-sm text-gray-500 mb-1">
                             Коробка
@@ -231,7 +234,7 @@ const Create: React.FC = () => {
                     <div>
                       <h2 className="text-lg font-medium mb-4">Владение</h2>
                       <div className="space-y-4">
-                        <div>
+                        {/* <div>
                           <Label className="text-sm text-gray-500 mb-1">
                             Собственность
                           </Label>
@@ -249,9 +252,9 @@ const Create: React.FC = () => {
                               По доверенности
                             </Button>
                           </div>
-                        </div>
+                        </div> */}
 
-                        <div>
+                        {/* <div>
                           <Label className="text-sm text-gray-500 mb-1">
                             ПТС
                           </Label>
@@ -268,7 +271,7 @@ const Create: React.FC = () => {
                               </div>
                             </RadioGroup>
                           </div>
-                        </div>
+                        </div> */}
 
                         <div>
                           <Label className="text-sm text-gray-500 mb-1">
@@ -378,17 +381,14 @@ const Create: React.FC = () => {
                           </Label>
                           <Input
                             className="border-gray-300"
-                            value="+7 (912) 345-67-89"
+                            value="+998991234567"
                           />
                         </div>
                         <div>
                           <Label className="text-sm text-gray-500 mb-1">
                             Адрес
                           </Label>
-                          <Input
-                            className="border-gray-300"
-                            value="Москва, ул. Ленина 1"
-                          />
+                          <Input className="border-gray-300" value="Tashkent" />
                         </div>
                       </div>
                     </div>
@@ -404,18 +404,7 @@ const Create: React.FC = () => {
                           value={price}
                           onChange={(e) => setPrice(e.target.value)}
                         />
-                        <span className="ml-2 text-lg">₽</span>
-                      </div>
-                    </div>
-
-                    {/* Terms section */}
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="terms" />
-                        <Label htmlFor="terms" className="text-sm">
-                          Я соглашаюсь с правилами размещения объявлений на
-                          Avito
-                        </Label>
+                        <span className="ml-2 text-lg">$</span>
                       </div>
                     </div>
                   </div>
@@ -423,7 +412,7 @@ const Create: React.FC = () => {
               </div>
 
               {/* Right column - Preview */}
-              <div className="lg:col-span-1">
+              {/* <div className="lg:col-span-1">
                 <Card className="p-6 bg-white rounded-lg shadow-sm sticky top-6">
                   <h2 className="text-lg font-medium mb-4">
                     Предпросмотр объявления
@@ -455,7 +444,7 @@ const Create: React.FC = () => {
                     </Button>
                   </div>
                 </Card>
-              </div>
+              </div> */}
             </div>
           </TabsContent>
 
