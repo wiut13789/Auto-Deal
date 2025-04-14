@@ -1,5 +1,5 @@
 export interface IAnnouncement {
-  num: number;
+  id: number;
   title: string;
   price: string;
   model: string;
