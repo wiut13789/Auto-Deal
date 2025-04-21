@@ -219,8 +219,7 @@ const Create: React.FC = () => {
 
             <div>
               <h2 className="text-xl font-medium mb-4">Местоположение</h2>
-              <p className="text-gray-700 mb-4">Москва, ул. Ленина 1</p>
-              <div className="aspect-[16/9] bg-gray-200 rounded-lg"></div>
+              <p className="text-gray-700 mb-4">tashkent</p>
             </div>
           </div>
         </div>

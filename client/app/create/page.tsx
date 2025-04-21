@@ -18,11 +18,19 @@ const Create: React.FC = () => {
     brand: "",
     model: "",
     year: "2025",
-    fuelType: "",
-    transmissionType: "",
     kilometers: "0",
+    is_new: "",
+    body_type: "",
+    car_type: "", //
+    fuelType: "", //
+    transmissionType: "", //gear type
+    color: "",
     previousOwners: "",
+    photo: "",
+    description: "",
+    phone_number: "",
     location: "",
+    price: "0",
   });
 
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -92,16 +100,14 @@ const Create: React.FC = () => {
 
   return (
     <div className="container">
-      {/* <h1 className="mb-6 text-2xl font-medium">Редактирование объявления</h1> */}
-
       <Card className="p-6 bg-white rounded-lg shadow-sm">
         <div className="space-y-8">
           {/* Basic info */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Основная информация</h2>
+            <h2 className="text-lg font-medium mb-4">Basic information</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Марка</Label>
+                <Label className="text-sm text-gray-500 mb-1">Brand</Label>
                 <Input
                   className="border-gray-300"
                   placeholder="BMW"
@@ -112,7 +118,7 @@ const Create: React.FC = () => {
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Модель</Label>
+                <Label className="text-sm text-gray-500 mb-1">Model</Label>
                 <Input
                   className="border-gray-300"
                   placeholder="M5"
@@ -123,29 +129,41 @@ const Create: React.FC = () => {
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">
-                  Год выпуска
-                </Label>
-                <Input className="border-gray-300" value="2025" />
+                <Label className="text-sm text-gray-500 mb-1">Year</Label>
+                <Input
+                  className="border-gray-300"
+                  placeholder="year"
+                  value={formData.year}
+                  onChange={(e) =>
+                    setFormData({ ...formData, year: e.target.value })
+                  }
+                />
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Пробег, км</Label>
-                <Input className="border-gray-300" value="0" />
+                <Label className="text-sm text-gray-500 mb-1">Mileage</Label>
+                <Input
+                  className="border-gray-300"
+                  placeholder="0"
+                  value={formData.kilometers}
+                  onChange={(e) =>
+                    setFormData({ ...formData, kilometers: e.target.value })
+                  }
+                />
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Статус</Label>
+                <Label className="text-sm text-gray-500 mb-1">status</Label>
                 <div className="flex space-x-2 mt-1">
                   <Button
                     variant="outline"
                     className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
                   >
-                    Новая
+                    New
                   </Button>
                   <Button
                     variant="outline"
                     className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
                   >
-                    С пробегом
+                    Used
                   </Button>
                 </div>
               </div>
@@ -156,75 +174,59 @@ const Create: React.FC = () => {
 
           {/* Car specifications */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Характеристики</h2>
+            <h2 className="text-lg font-medium mb-4">Characteristics</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Тип кузова</Label>
+                <Label className="text-sm text-gray-500 mb-1">Body type</Label>
                 <div className="flex flex-wrap gap-2 mt-1">
                   <Button
                     variant="outline"
                     className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
                   >
-                    Седан
+                    Sedan
                   </Button>
                   <Button
                     variant="outline"
                     className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
                   >
-                    Универсал
+                    Universal
                   </Button>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Двигатель</Label>
+                <Label className="text-sm text-gray-500 mb-1">Fuel type</Label>
                 <div className="flex flex-wrap gap-2 mt-1">
                   <Button
                     variant="outline"
                     className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
                   >
-                    Бензин
+                    Petrol
                   </Button>
                   <Button
                     variant="outline"
                     className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
                   >
-                    Дизель
+                    Diesel
                   </Button>
                 </div>
               </div>
-              {/* <div>
-                          <Label className="text-sm text-gray-500 mb-1">
-                            Привод
-                          </Label>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            <Button
-                              variant="outline"
-                              className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
-                            >
-                              Полный
-                            </Button>
-                            <Button
-                              variant="outline"
-                              className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
-                            >
-                              Задний
-                            </Button>
-                          </div>
-                        </div> */}
+
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Коробка</Label>
+                <Label className="text-sm text-gray-500 mb-1">
+                  Transmission type
+                </Label>
                 <div className="flex flex-wrap gap-2 mt-1">
                   <Button
                     variant="outline"
                     className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
                   >
-                    Автомат
+                    Automatic
                   </Button>
                   <Button
                     variant="outline"
                     className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
                   >
-                    Механика
+                    Manual
                   </Button>
                 </div>
               </div>
@@ -232,7 +234,7 @@ const Create: React.FC = () => {
 
             {/* Color selection */}
             <div className="mt-4">
-              <Label className="text-sm text-gray-500 mb-1">Цвет кузова</Label>
+              <Label className="text-sm text-gray-500 mb-1">Body color</Label>
               <div className="flex flex-wrap gap-3 mt-2">
                 {colors.map((color) => (
                   <button
@@ -253,75 +255,21 @@ const Create: React.FC = () => {
 
           {/* Ownership */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Владение</h2>
+            <h2 className="text-lg font-medium mb-4">Ownership</h2>
             <div className="space-y-4">
-              {/* <div>
-                          <Label className="text-sm text-gray-500 mb-1">
-                            Собственность
-                          </Label>
-                          <div className="flex space-x-2 mt-1">
-                            <Button
-                              variant="outline"
-                              className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
-                            >
-                              Собственник
-                            </Button>
-                            <Button
-                              variant="outline"
-                              className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
-                            >
-                              По доверенности
-                            </Button>
-                          </div>
-                        </div> */}
-
-              {/* <div>
-                          <Label className="text-sm text-gray-500 mb-1">
-                            ПТС
-                          </Label>
-                          <div className="flex items-center space-x-4 mt-1">
-                            <RadioGroup defaultValue="original">
-                              <div className="flex items-center space-x-2">
-                                <RadioGroupItem
-                                  value="original"
-                                  id="original"
-                                />
-                                <Label htmlFor="original">
-                                  Оригинал / Электронный (ЭПТС)
-                                </Label>
-                              </div>
-                            </RadioGroup>
-                          </div>
-                        </div> */}
-
               <div>
                 <Label className="text-sm text-gray-500 mb-1">
-                  Количество владельцев
+                  The number of owners
                 </Label>
                 <div className="flex items-center space-x-4 mt-1">
-                  <RadioGroup defaultValue="owners">
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="owners" id="owners" />
-                      <Label htmlFor="owners">Количество</Label>
-                    </div>
-                  </RadioGroup>
-                  <Input className="w-20 h-8 border-gray-300" value="1" />
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-sm text-gray-500 mb-1">
-                  Когда был куплен автомобиль?
-                </Label>
-                <div className="flex items-center space-x-4 mt-1">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="new-car" />
-                    <Label htmlFor="new-car">Не указано</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="used-car" />
-                    <Label htmlFor="used-car">Не применимо</Label>
-                  </div>
+                  <Input
+                    className="w-20 h-8 border-gray-300"
+                    placeholder="1"
+                    value={formData.previousOwners}
+                    onChange={(e) =>
+                      setFormData({ ...formData, brand: e.target.value })
+                    }
+                  />
                 </div>
               </div>
             </div>
@@ -331,12 +279,12 @@ const Create: React.FC = () => {
 
           {/* Photo section */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Фотографии</h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <h2 className="text-lg font-medium mb-4">Car images</h2>
+            {/* <p className="text-sm text-gray-600 mb-4">
               Чтобы фото быстро загружались, используйте изображения размером не
               более 800x600 пикселей. Загружайте фото в формате JPG или PNG.
               Максимальный размер файла 5 МБ.
-            </p>
+            </p> */}
 
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div className="relative aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
@@ -363,7 +311,7 @@ const Create: React.FC = () => {
                 className="!rounded-button text-green-600 border-green-600 hover:bg-green-50 whitespace-nowrap"
               >
                 <i className="fas fa-upload mr-2"></i>
-                Загрузить фото
+                Upload image
               </Button>
             </div>
           </div>
@@ -372,15 +320,15 @@ const Create: React.FC = () => {
 
           {/* Description section */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Описание</h2>
+            <h2 className="text-lg font-medium mb-4">Description</h2>
             <Textarea
               className="min-h-[120px] border-gray-300"
-              placeholder="Опишите состояние автомобиля, комплектацию и особенности"
+              placeholder="Describe the condition of the car, its configuration, and features."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
             <p className="text-sm text-gray-500 mt-2">
-              Минимум 80 символов. Сейчас: {description.length}
+              At least 80 characters. Currently: {description.length}
             </p>
           </div>
 
@@ -388,15 +336,24 @@ const Create: React.FC = () => {
 
           {/* Contacts section */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Контакты</h2>
-            <p className="text-sm text-gray-600 mb-2">Как с вами связаться?</p>
+            <h2 className="text-lg font-medium mb-4">Contacts</h2>
+
             <div className="space-y-4">
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Телефон</Label>
-                <Input className="border-gray-300" value="+998991234567" />
+                <Label className="text-sm text-gray-500 mb-1">
+                  Phone number
+                </Label>
+                <Input
+                  className="border-gray-300"
+                  placeholder="+998991234567"
+                  value={formData.phone_number}
+                  onChange={(e) =>
+                    setFormData({ ...formData, brand: e.target.value })
+                  }
+                />
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Адрес</Label>
+                <Label className="text-sm text-gray-500 mb-1">Location</Label>
                 <Input className="border-gray-300" value="Tashkent" />
               </div>
             </div>
@@ -406,16 +363,27 @@ const Create: React.FC = () => {
 
           {/* Price section */}
           <div>
-            <h2 className="text-lg font-medium mb-4">Цена</h2>
+            <h2 className="text-lg font-medium mb-4">Price</h2>
             <div className="flex items-center">
               <Input
                 className="border-gray-300 text-right"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0"
+                value={formData.price}
+                onChange={(e) =>
+                  setFormData({ ...formData, model: e.target.value })
+                }
               />
               <span className="ml-2 text-lg">$</span>
             </div>
           </div>
+        </div>
+        <div className="mt-8 flex justify-center">
+          <Button
+            onClick={handleSubmit}
+            className="bg-slate-400 text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer"
+          >
+            Create advertisement
+          </Button>
         </div>
         <div className="mt-8 flex justify-center">
           <Button

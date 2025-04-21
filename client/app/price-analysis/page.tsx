@@ -29,6 +29,20 @@ const App: React.FC = () => {
     previousOwners: "",
     location: "",
   });
+  const colors = [
+    { id: "black", color: "bg-black" },
+    { id: "white", color: "bg-white border border-gray-300" },
+    { id: "gray", color: "bg-gray-400" },
+    { id: "red", color: "bg-red-500" },
+    { id: "blue", color: "bg-blue-600" },
+    { id: "purple", color: "bg-purple-500" },
+    { id: "green", color: "bg-green-500" },
+    { id: "yellow", color: "bg-yellow-400" },
+  ];
+  const handleColorSelect = (colorId: string) => {
+    setSelectedColor(colorId);
+  };
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
 
   const [predictedPrice, setPredictedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -214,7 +228,22 @@ const App: React.FC = () => {
                   min="0"
                 />
               </div>
-
+              <div className="mt-4">
+                <Label className="text-sm text-gray-500 mb-1">Body color</Label>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {colors.map((color) => (
+                    <button
+                      key={color.id}
+                      className={`w-8 h-8 rounded-full ${color.color} ${
+                        selectedColor === color.id
+                          ? "ring-2 ring-offset-2 ring-green-500"
+                          : ""
+                      }`}
+                      onClick={() => handleColorSelect(color.id)}
+                    />
+                  ))}
+                </div>
+              </div>
               <div className="grid gap-3">
                 <Label htmlFor="previousOwners" className="text-gray-700">
                   Number of Previous Owners
@@ -283,31 +312,14 @@ const App: React.FC = () => {
                   <Separator className="my-6" />
 
                   <div className="grid grid-cols-2 gap-6 w-full max-w-md">
-                    <div>
-                      <div className="text-sm text-gray-500">
-                        Confidence Range
-                      </div>
-                      <div className="font-medium">
-                        ${Math.floor(predictedPrice! * 0.9).toLocaleString()} -
-                        ${Math.ceil(predictedPrice! * 1.1).toLocaleString()}
-                      </div>
+                    <div className="text-sm text-gray-500">
+                      Confidence Range
                     </div>
-                    <div>
-                      <div className="text-sm text-gray-500">
-                        Valuation Date
-                      </div>
-                      <div className="font-medium">April 2, 2025</div>
+                    <div className="font-medium">
+                      ${Math.floor(predictedPrice! * 0.9).toLocaleString()} - $
+                      {Math.ceil(predictedPrice! * 1.1).toLocaleString()}
                     </div>
                   </div>
-
-                  <Alert className="mt-6 bg-blue-50 border-blue-200">
-                    <i className="fas fa-info-circle mr-2"></i>
-                    <AlertTitle>Market Insight</AlertTitle>
-                    <AlertDescription>
-                      This valuation is based on current market conditions and
-                      similar vehicles in your area.
-                    </AlertDescription>
-                  </Alert>
                 </div>
               </CardContent>
             </Card>

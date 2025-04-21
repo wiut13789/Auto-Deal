@@ -8,7 +8,6 @@ const Home = async () => {
   return (
     <main>
       <div className="container">
-        All advertisements
         <AnnouncementsGrid items={data.data} />
       </div>
     </main>
