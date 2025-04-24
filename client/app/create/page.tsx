@@ -1,71 +1,92 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { colors } from "@/data/colors";
+import { brands } from "@/data/brands";
+import { models } from "@/data/models";
+import { manufactureYear } from "@/data/manufactureYear";
+import { generateYears } from "@/utils";
+import { transmissionType } from "@/data/transmission-type";
+import { bodyType } from "@/data/bodyType";
+import { fuelType } from "@/data/fuelType";
+import { regions } from "@/data/regions";
+import { useRouter } from "next/navigation";
 
 const Create: React.FC = () => {
   const [formData, setFormData] = useState({
     brand: "",
     model: "",
-    year: "2025",
+    year: "",
     kilometers: "0",
-    is_new: "",
-    body_type: "",
-    car_type: "", //
+    isNew: null,
+    bodyType: "",
     fuelType: "", //
     transmissionType: "", //gear type
     color: "",
     previousOwners: "",
     photo: "",
     description: "",
-    phone_number: "",
-    location: "",
-    price: "0",
+    phoneNumber: "",
+    region: "",
+    price: 0,
   });
 
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("950 000");
-  const [activeTab, setActiveTab] = useState("edit");
+  const [isFormFilled, setIsFormFilled] = useState(false);
+
+  const handleSelectChange = (name: string, value: string | boolean) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const [predictedPrice, setPredictedPrice] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  const colors = [
-    { id: "black", color: "bg-black" },
-    { id: "white", color: "bg-white border border-gray-300" },
-    { id: "gray", color: "bg-gray-400" },
-    { id: "red", color: "bg-red-500" },
-    { id: "blue", color: "bg-blue-600" },
-    { id: "purple", color: "bg-purple-500" },
-    { id: "green", color: "bg-green-500" },
-    { id: "mint", color: "bg-emerald-300" },
-    { id: "yellow", color: "bg-yellow-400" },
-  ];
+  const router = useRouter();
 
-  const handleColorSelect = (colorId: string) => {
-    setSelectedColor(colorId);
+  const handleSubmit = async () => {
+    if (!isFormFilled) return;
+
+    const URL = "https://fakestoreapi.com/products"; //! localhost ???
+
+    const response = await fetch(URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+
+    console.log(data);
+
+    // router.push("/");
   };
-  const handleSubmit = () => {
+
+  const analyzeHandler = () => {
     setIsLoading(true);
 
     // Simulate API call with setTimeout
     setTimeout(() => {
       // Calculate a sample price based on inputs
       const basePrice = 25000;
-      const yearFactor = (2025 - parseInt(formData.year)) * 1000;
-      const kmFactor = parseInt(formData.kilometers) * 0.05;
+      const yearFactor = (2025 - Number(formData.year)) * 1000;
+      const kmFactor = Number(formData.kilometers) * 0.05;
       const ownersFactor = formData.previousOwners
         ? parseInt(formData.previousOwners) * 1500
         : 0;
@@ -98,6 +119,56 @@ const Create: React.FC = () => {
   const carImage =
     "https://public.readdy.ai/ai/img_res/f0d671a43cf44c11de0f5fabf30b6f55.jpg";
 
+  useEffect(() => {
+    handleSelectChange("model", "");
+  }, [formData.brand]);
+
+  useEffect(() => {
+    handleSelectChange("isNew", Number(formData.kilometers) <= 300);
+  }, [formData.kilometers]);
+
+  useEffect(() => {
+    handleSelectChange("year", "");
+    handleSelectChange("bodyType", "");
+    handleSelectChange("fuelType", "");
+    handleSelectChange("transmissionType", "");
+  }, [formData.model]);
+
+  useEffect(
+    () =>
+      setIsFormFilled(
+        !!formData.brand &&
+          !!formData.bodyType &&
+          !!formData.color &&
+          !!formData.description &&
+          !!formData.fuelType &&
+          typeof formData.isNew !== "object" &&
+          !!formData.model &&
+          !!formData.phoneNumber &&
+          !!Number(formData.previousOwners) &&
+          !!formData.region &&
+          !!formData.transmissionType &&
+          !!formData.year &&
+          !!Number(formData.price)
+      ),
+    [
+      formData.brand,
+      formData.bodyType,
+      formData.color,
+      formData.description,
+      formData.fuelType,
+      formData.isNew,
+      formData.kilometers,
+      formData.model,
+      formData.phoneNumber,
+      formData.previousOwners,
+      formData.region,
+      formData.transmissionType,
+      formData.year,
+      formData.price,
+    ]
+  );
+
   return (
     <div className="container">
       <Card className="p-6 bg-white rounded-lg shadow-sm">
@@ -107,61 +178,111 @@ const Create: React.FC = () => {
             <h2 className="text-lg font-medium mb-4">Basic information</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Brand</Label>
-                <Input
-                  className="border-gray-300"
-                  placeholder="BMW"
+                <Label
+                  htmlFor="brandName"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Brand name
+                </Label>
+                <Select
                   value={formData.brand}
-                  onChange={(e) =>
-                    setFormData({ ...formData, brand: e.target.value })
-                  }
-                />
+                  onValueChange={(value) => handleSelectChange("brand", value)}
+                >
+                  <SelectTrigger id="brandName" className="border-gray-300">
+                    <SelectValue placeholder="Select brand name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.id.toString()}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Model</Label>
-                <Input
-                  className="border-gray-300"
-                  placeholder="M5"
+                <Label
+                  htmlFor="modelName"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Model name
+                </Label>
+                <Select
+                  disabled={!formData.brand}
                   value={formData.model}
-                  onChange={(e) =>
-                    setFormData({ ...formData, model: e.target.value })
-                  }
-                />
+                  onValueChange={(value) => handleSelectChange("model", value)}
+                >
+                  <SelectTrigger id="modelName" className="border-gray-300">
+                    <SelectValue placeholder="Select brand name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.brand &&
+                      models[formData.brand]?.map((model) => (
+                        <SelectItem key={model.id} value={model.id.toString()}>
+                          {model.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label className="text-sm text-gray-500 mb-1">Year</Label>
-                <Input
-                  className="border-gray-300"
-                  placeholder="year"
+                <Select
+                  disabled={!formData.model}
                   value={formData.year}
-                  onChange={(e) =>
-                    setFormData({ ...formData, year: e.target.value })
-                  }
-                />
+                  onValueChange={(value) => handleSelectChange("year", value)}
+                >
+                  <SelectTrigger id="year" className="border-gray-300">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.model &&
+                      generateYears(
+                        manufactureYear[formData.model]?.from,
+                        manufactureYear[formData.model]?.to
+                      ).map((year, index) => (
+                        <SelectItem key={index} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label className="text-sm text-gray-500 mb-1">Mileage</Label>
                 <Input
+                  type="number"
                   className="border-gray-300"
+                  min={0}
                   placeholder="0"
-                  value={formData.kilometers}
                   onChange={(e) =>
-                    setFormData({ ...formData, kilometers: e.target.value })
+                    handleSelectChange("kilometers", e.target.value)
                   }
+                  value={formData.kilometers}
                 />
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">status</Label>
+                <Label className="text-sm text-gray-500 mb-1">Status</Label>
                 <div className="flex space-x-2 mt-1">
                   <Button
+                    disabled={!!formData.isNew}
                     variant="outline"
-                    className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
+                    className={`!rounded-button whitespace-nowrap disabled:cursor-not-allowed ${
+                      Number(formData.kilometers) <= 300
+                        ? "bg-green-100 hover:bg-green-100 hover:text-green-700 text-green-700 border-green-200 cursor-default"
+                        : "bg-gray-100 text-gray-700 border-gray-200 disabled:hover:bg-gray-100"
+                    }`}
                   >
                     New
                   </Button>
                   <Button
+                    disabled={!formData.isNew}
                     variant="outline"
-                    className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
+                    className={`!rounded-button whitespace-nowrap disabled:cursor-not-allowed ${
+                      Number(formData.kilometers) > 300
+                        ? "bg-green-100 hover:bg-green-100 hover:text-green-700 text-green-700 border-green-200 cursor-default"
+                        : "bg-gray-100 text-gray-700 border-gray-200 disabled:hover:bg-gray-100"
+                    }`}
                   >
                     Used
                   </Button>
@@ -177,58 +298,104 @@ const Create: React.FC = () => {
             <h2 className="text-lg font-medium mb-4">Characteristics</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Body type</Label>
+                <Label
+                  htmlFor="bodyType"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Body type
+                </Label>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  <Button
-                    variant="outline"
-                    className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
+                  <Select
+                    disabled={!formData.model}
+                    value={formData.bodyType}
+                    onValueChange={(value) =>
+                      handleSelectChange("bodyType", value)
+                    }
                   >
-                    Sedan
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
-                  >
-                    Universal
-                  </Button>
+                    <SelectTrigger id="bodyType" className="border-gray-300">
+                      <SelectValue placeholder="Select body type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formData.model &&
+                        bodyType[formData.model]?.map((bodyType) => (
+                          <SelectItem
+                            key={bodyType.id}
+                            value={bodyType.id.toString()}
+                          >
+                            {bodyType.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div>
-                <Label className="text-sm text-gray-500 mb-1">Fuel type</Label>
+                <Label
+                  htmlFor="fuelType"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Fuel type
+                </Label>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  <Button
-                    variant="outline"
-                    className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
+                  <Select
+                    disabled={!formData.model}
+                    value={formData.fuelType}
+                    onValueChange={(value) =>
+                      handleSelectChange("fuelType", value)
+                    }
                   >
-                    Petrol
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
-                  >
-                    Diesel
-                  </Button>
+                    <SelectTrigger id="fuelType" className="border-gray-300">
+                      <SelectValue placeholder="Select fuel type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {formData.model &&
+                        fuelType[formData.model]?.map((fuelType) => (
+                          <SelectItem
+                            key={fuelType.id}
+                            value={fuelType.id.toString()}
+                          >
+                            {fuelType.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               <div>
-                <Label className="text-sm text-gray-500 mb-1">
+                <Label
+                  htmlFor="transmissionType"
+                  className="text-sm text-gray-500 mb-1"
+                >
                   Transmission type
                 </Label>
-                <div className="flex flex-wrap gap-2 mt-1">
-                  <Button
-                    variant="outline"
-                    className="!rounded-button bg-green-100 text-green-700 border-green-200 hover:bg-green-200 whitespace-nowrap"
+                <Select
+                  disabled={!formData.model}
+                  value={formData.transmissionType}
+                  onValueChange={(value) =>
+                    handleSelectChange("transmissionType", value)
+                  }
+                >
+                  <SelectTrigger
+                    id="transmissionType"
+                    className="border-gray-300"
                   >
-                    Automatic
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="!rounded-button bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 whitespace-nowrap"
-                  >
-                    Manual
-                  </Button>
-                </div>
+                    <SelectValue placeholder="Select transmission type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.model &&
+                      transmissionType[formData.model]?.map(
+                        (transmissionType) => (
+                          <SelectItem
+                            key={transmissionType.id}
+                            value={transmissionType.id.toString()}
+                          >
+                            {transmissionType.name}
+                          </SelectItem>
+                        )
+                      )}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -240,11 +407,11 @@ const Create: React.FC = () => {
                   <button
                     key={color.id}
                     className={`w-8 h-8 rounded-full ${color.color} ${
-                      selectedColor === color.id
+                      formData.color === color.id
                         ? "ring-2 ring-offset-2 ring-green-500"
                         : ""
                     }`}
-                    onClick={() => handleColorSelect(color.id)}
+                    onClick={() => handleSelectChange("color", color.id)}
                   />
                 ))}
               </div>
@@ -263,11 +430,13 @@ const Create: React.FC = () => {
                 </Label>
                 <div className="flex items-center space-x-4 mt-1">
                   <Input
+                    type="number"
                     className="w-20 h-8 border-gray-300"
-                    placeholder="1"
+                    min={0}
+                    placeholder="0"
                     value={formData.previousOwners}
                     onChange={(e) =>
-                      setFormData({ ...formData, brand: e.target.value })
+                      handleSelectChange("previousOwners", e.target.value)
                     }
                   />
                 </div>
@@ -280,11 +449,6 @@ const Create: React.FC = () => {
           {/* Photo section */}
           <div>
             <h2 className="text-lg font-medium mb-4">Car images</h2>
-            {/* <p className="text-sm text-gray-600 mb-4">
-              Чтобы фото быстро загружались, используйте изображения размером не
-              более 800x600 пикселей. Загружайте фото в формате JPG или PNG.
-              Максимальный размер файла 5 МБ.
-            </p> */}
 
             <div className="grid grid-cols-3 gap-4 mb-4">
               <div className="relative aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
@@ -324,37 +488,63 @@ const Create: React.FC = () => {
             <Textarea
               className="min-h-[120px] border-gray-300"
               placeholder="Describe the condition of the car, its configuration, and features."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={(e) => {
+                if (formData.description.length < 80) {
+                  handleSelectChange("description", e.target.value);
+                }
+              }}
             />
             <p className="text-sm text-gray-500 mt-2">
-              At least 80 characters. Currently: {description.length}
+              At least 80 characters. Currently: {formData.description.length}
             </p>
           </div>
 
           <Separator />
 
           {/* Contacts section */}
-          <div>
-            <h2 className="text-lg font-medium mb-4">Contacts</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h2 className="text-lg font-medium mb-4">Contacts</h2>
 
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm text-gray-500 mb-1">
-                  Phone number
-                </Label>
-                <Input
-                  className="border-gray-300"
-                  placeholder="+998991234567"
-                  value={formData.phone_number}
-                  onChange={(e) =>
-                    setFormData({ ...formData, brand: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <Label className="text-sm text-gray-500 mb-1">Location</Label>
-                <Input className="border-gray-300" value="Tashkent" />
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm text-gray-500 mb-1">
+                    Phone number
+                  </Label>
+                  <Input
+                    className="border-gray-300"
+                    placeholder="+998991234567"
+                    value={formData.phoneNumber}
+                    type="number"
+                    onChange={(e) =>
+                      handleSelectChange("phoneNumber", e.target.value)
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm text-gray-500 mb-1">Location</Label>
+                  <Select
+                    value={formData.region}
+                    onValueChange={(value) =>
+                      handleSelectChange("region", value)
+                    }
+                  >
+                    <SelectTrigger id="region" className="border-gray-300">
+                      <SelectValue placeholder="Select region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {regions.map((region) => (
+                        <SelectItem
+                          key={region.id}
+                          value={region.id.toString()}
+                        >
+                          {region.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
@@ -366,28 +556,34 @@ const Create: React.FC = () => {
             <h2 className="text-lg font-medium mb-4">Price</h2>
             <div className="flex items-center">
               <Input
+                type="number"
                 className="border-gray-300 text-right"
                 placeholder="0"
                 value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, model: e.target.value })
-                }
+                onChange={(e) => handleSelectChange("price", e.target.value)}
               />
               <span className="ml-2 text-lg">$</span>
             </div>
           </div>
         </div>
+
+        {/* create adv btn */}
+
         <div className="mt-8 flex justify-center">
           <Button
+            type="button"
+            disabled={!isFormFilled}
             onClick={handleSubmit}
-            className="bg-slate-400 text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer"
+            className="bg-slate-400 text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
           >
             Create advertisement
           </Button>
         </div>
+        {/* analyzing btn */}
         <div className="mt-8 flex justify-center">
           <Button
-            onClick={handleSubmit}
+            type="button"
+            onClick={analyzeHandler}
             className="bg-[#38A65B] text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer"
             disabled={isLoading}
           >

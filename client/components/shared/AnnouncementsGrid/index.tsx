@@ -14,8 +14,12 @@ export const AnnouncementsGrid = ({ items }: AnnouncementsGridProps) => {
   return (
     <div className="grid grid-cols-3 gap-[29px]">
       {items.map((item) => (
-        <Link href={`/car/${item.id}`}>
-          <div key={item.id} className="p-2.5 flex flex-col border rounded-md">
+        <Link
+          key={item.id}
+          className="p-2.5 flex flex-col border rounded-md"
+          href={`/car/${item.id}`}
+        >
+          <div>
             {"imagePath" in item && (
               <div className="w-full h-[228px]">
                 <Image src={item.imagePath} fill alt={item.title} />

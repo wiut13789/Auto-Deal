@@ -2,7 +2,7 @@
 
 // The exported code uses Tailwind CSS. Install Tailwind CSS in your dev environment to ensure all styles work.
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,30 +15,29 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+import { colors } from "@/data/colors";
+import { brands } from "@/data/brands";
+import { models } from "@/data/models";
+import { manufactureYear } from "@/data/manufactureYear";
+import { generateYears } from "@/utils";
+import { transmissionType } from "@/data/transmission-type";
+import { bodyType } from "@/data/bodyType";
+import { fuelType } from "@/data/fuelType";
+import { regions } from "@/data/regions";
 const App: React.FC = () => {
   const [formData, setFormData] = useState({
     brand: "",
     model: "",
     year: "2025",
+    bodyType: "",
     fuelType: "",
     transmissionType: "",
     kilometers: "0",
     previousOwners: "",
-    location: "",
+    region: "",
   });
-  const colors = [
-    { id: "black", color: "bg-black" },
-    { id: "white", color: "bg-white border border-gray-300" },
-    { id: "gray", color: "bg-gray-400" },
-    { id: "red", color: "bg-red-500" },
-    { id: "blue", color: "bg-blue-600" },
-    { id: "purple", color: "bg-purple-500" },
-    { id: "green", color: "bg-green-500" },
-    { id: "yellow", color: "bg-yellow-400" },
-  ];
+
   const handleColorSelect = (colorId: string) => {
     setSelectedColor(colorId);
   };
@@ -55,14 +54,6 @@ const App: React.FC = () => {
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const generateYearOptions = () => {
-    const years = [];
-    for (let year = 2025; year >= 1990; year--) {
-      years.push(year);
-    }
-    return years;
   };
 
   const handleSubmit = () => {
@@ -103,6 +94,17 @@ const App: React.FC = () => {
     }, 1500);
   };
 
+  useEffect(() => {
+    handleSelectChange("model", "");
+  }, [formData.brand]);
+
+  useEffect(() => {
+    handleSelectChange("year", "");
+    handleSelectChange("bodyType", "");
+    handleSelectChange("fuelType", "");
+    handleSelectChange("transmissionType", "");
+  }, [formData.model]);
+
   return (
     <div className=" bg-gray-50 flex flex-col items-center py-10 px-4">
       <div className="w-full max-w-3xl">
@@ -117,60 +119,122 @@ const App: React.FC = () => {
           <CardContent className="pt-6 pb-8">
             <div className="grid gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="brand" className="text-gray-700">
-                  Car Brand
-                </Label>
-                <Input
-                  id="brand"
-                  name="brand"
-                  placeholder="Enter car brand (e.g. Toyota, Honda)"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  className="border-gray-300 "
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="model" className="text-gray-700">
-                  Car Model
-                </Label>
-                <Input
-                  id="model"
-                  name="model"
-                  placeholder="Enter car model (e.g. Camry, Civic)"
-                  value={formData.model}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                />
-              </div>
-
-              <div className="grid gap-3">
-                <Label htmlFor="year" className="text-gray-700">
-                  Year of Manufacturing
+                <Label
+                  htmlFor="brandName"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Brand name
                 </Label>
                 <Select
+                  value={formData.brand}
+                  onValueChange={(value) => handleSelectChange("brand", value)}
+                >
+                  <SelectTrigger id="brandName" className="border-gray-300">
+                    <SelectValue placeholder="Select brand name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {brands.map((brand) => (
+                      <SelectItem key={brand.id} value={brand.id.toString()}>
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-3">
+                <Label
+                  htmlFor="modelName"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Model name
+                </Label>
+                <Select
+                  disabled={!formData.brand}
+                  value={formData.model}
+                  onValueChange={(value) => handleSelectChange("model", value)}
+                >
+                  <SelectTrigger id="modelName" className="border-gray-300">
+                    <SelectValue placeholder="Select brand name" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.brand &&
+                      models[formData.brand]?.map((model) => (
+                        <SelectItem key={model.id} value={model.id.toString()}>
+                          {model.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid gap-3">
+                <Label className="text-sm text-gray-500 mb-1">Year</Label>
+                <Select
+                  disabled={!formData.model}
+                  value={formData.year}
                   onValueChange={(value) => handleSelectChange("year", value)}
-                  defaultValue="2025"
                 >
                   <SelectTrigger id="year" className="border-gray-300">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent>
-                    {generateYearOptions().map((year) => (
-                      <SelectItem key={year} value={year.toString()}>
-                        {year}
-                      </SelectItem>
-                    ))}
+                    {formData.model &&
+                      generateYears(
+                        manufactureYear[formData.model]?.from,
+                        manufactureYear[formData.model]?.to
+                      ).map((year, index) => (
+                        <SelectItem key={index} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
                 <span className="text-xs text-gray-500">(1990-2025)</span>
               </div>
+              <div className="grid gap-3">
+                <Label
+                  htmlFor="bodyType"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Body type
+                </Label>
+
+                <Select
+                  disabled={!formData.model}
+                  value={formData.bodyType}
+                  onValueChange={(value) =>
+                    handleSelectChange("bodyType", value)
+                  }
+                >
+                  <SelectTrigger id="bodyType" className="border-gray-300">
+                    <SelectValue placeholder="Select body type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.model &&
+                      bodyType[formData.model]?.map((bodyType) => (
+                        <SelectItem
+                          key={bodyType.id}
+                          value={bodyType.id.toString()}
+                        >
+                          {bodyType.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="fuelType" className="text-gray-700">
-                  Fuel Type
+                <Label
+                  htmlFor="fuelType"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Fuel type
                 </Label>
+
                 <Select
+                  disabled={!formData.model}
+                  value={formData.fuelType}
                   onValueChange={(value) =>
                     handleSelectChange("fuelType", value)
                   }
@@ -179,19 +243,42 @@ const App: React.FC = () => {
                     <SelectValue placeholder="Select fuel type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="petrol">Petrol</SelectItem>
-                    <SelectItem value="diesel">Diesel</SelectItem>
-                    <SelectItem value="electric">Electric</SelectItem>
-                    <SelectItem value="hybrid">Hybrid</SelectItem>
+                    {formData.model &&
+                      fuelType[formData.model]?.map((fuelType) => (
+                        <SelectItem
+                          key={fuelType.id}
+                          value={fuelType.id.toString()}
+                        >
+                          {fuelType.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
+              <div className="grid gap-3">
+                <Label className="text-sm text-gray-500 mb-1">Mileage</Label>
+                <Input
+                  type="number"
+                  className="border-gray-300"
+                  min={0}
+                  placeholder="0"
+                  onChange={(e) =>
+                    handleSelectChange("kilometers", e.target.value)
+                  }
+                  value={formData.kilometers}
+                />
+              </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="transmissionType" className="text-gray-700">
-                  Transmission Type
+                <Label
+                  htmlFor="transmissionType"
+                  className="text-sm text-gray-500 mb-1"
+                >
+                  Transmission type
                 </Label>
                 <Select
+                  disabled={!formData.model}
+                  value={formData.transmissionType}
                   onValueChange={(value) =>
                     handleSelectChange("transmissionType", value)
                   }
@@ -203,31 +290,21 @@ const App: React.FC = () => {
                     <SelectValue placeholder="Select transmission type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="automatic">Automatic</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
-                    <SelectItem value="cvt">CVT</SelectItem>
-                    <SelectItem value="semi-automatic">
-                      Semi-automatic
-                    </SelectItem>
+                    {formData.model &&
+                      transmissionType[formData.model]?.map(
+                        (transmissionType) => (
+                          <SelectItem
+                            key={transmissionType.id}
+                            value={transmissionType.id.toString()}
+                          >
+                            {transmissionType.name}
+                          </SelectItem>
+                        )
+                      )}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="grid gap-3">
-                <Label htmlFor="kilometers" className="text-gray-700">
-                  Kilometers Driven
-                </Label>
-                <Input
-                  id="kilometers"
-                  name="kilometers"
-                  type="number"
-                  placeholder="0"
-                  value={formData.kilometers}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                  min="0"
-                />
-              </div>
               <div className="mt-4">
                 <Label className="text-sm text-gray-500 mb-1">Body color</Label>
                 <div className="flex flex-wrap gap-3 mt-2">
@@ -244,32 +321,46 @@ const App: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="previousOwners" className="text-gray-700">
-                  Number of Previous Owners
-                </Label>
-                <Input
-                  id="previousOwners"
-                  name="previousOwners"
-                  placeholder="Enter number of previous owners"
-                  value={formData.previousOwners}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                />
+              <div>
+                <h2 className="text-lg font-medium mb-4">Ownership</h2>
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm text-gray-500 mb-1">
+                      The number of owners
+                    </Label>
+                    <div className="flex items-center space-x-4 mt-1">
+                      <Input
+                        type="number"
+                        className="w-20 h-8 border-gray-300"
+                        min={0}
+                        placeholder="0"
+                        value={formData.previousOwners}
+                        onChange={(e) =>
+                          handleSelectChange("previousOwners", e.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="grid gap-3">
-                <Label htmlFor="location" className="text-gray-700">
-                  Current Location
-                </Label>
-                <Input
-                  id="location"
-                  name="location"
-                  placeholder="City, State"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  className="border-gray-300 "
-                />
+                <Label className="text-sm text-gray-500 mb-1">Location</Label>
+                <Select
+                  value={formData.region}
+                  onValueChange={(value) => handleSelectChange("region", value)}
+                >
+                  <SelectTrigger id="region" className="border-gray-300">
+                    <SelectValue placeholder="Select region" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {regions.map((region) => (
+                      <SelectItem key={region.id} value={region.id.toString()}>
+                        {region.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
