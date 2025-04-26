@@ -34,6 +34,7 @@ const App: React.FC = () => {
     fuelType: "",
     transmissionType: "",
     kilometers: "0",
+    color: "",
     previousOwners: "",
     region: "",
   });
@@ -311,8 +312,9 @@ const App: React.FC = () => {
                   {colors.map((color) => (
                     <button
                       key={color.id}
-                      className={`w-8 h-8 rounded-full ${color.color} ${
-                        selectedColor === color.id
+                      style={{ backgroundColor: color.color }}
+                      className={`w-8 h-8 rounded-full border border-[#d1d5db] ${
+                        formData.color === color.id
                           ? "ring-2 ring-offset-2 ring-green-500"
                           : ""
                       }`}

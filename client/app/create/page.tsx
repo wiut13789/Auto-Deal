@@ -59,23 +59,36 @@ const Create: React.FC = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    if (!isFormFilled) return;
+    try {
+      if (!isFormFilled) return;
 
-    const URL = "https://fakestoreapi.com/products"; //! localhost ???
+      const dataToSend = {
+        ...formData,
+        price: Number(formData.price),
+      };
 
-    const response = await fetch(URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+      console.log(dataToSend);
+      const URL = "http://127.0.0.1:8000/api/v1/ads/create";
 
-    if (!response.ok) return;
+      const response = await fetch(URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
+      });
 
-    const data = await response.json();
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Server error:", text);
+      }
 
-    console.log(data);
+      const data = await response.json();
 
-    // router.push("/");
+      console.log(data);
+
+      // router.push("/");
+    } catch (error: any) {
+      console.log(error.message);
+    }
   };
 
   const analyzeHandler = () => {
@@ -406,7 +419,8 @@ const Create: React.FC = () => {
                 {colors.map((color) => (
                   <button
                     key={color.id}
-                    className={`w-8 h-8 rounded-full ${color.color} ${
+                    style={{ backgroundColor: color.color }}
+                    className={`w-8 h-8 rounded-full border border-[#d1d5db] ${
                       formData.color === color.id
                         ? "ring-2 ring-offset-2 ring-green-500"
                         : ""
