@@ -1,3 +1,4 @@
+import { ContactButton } from "@/components/shared/ContactButton";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { bodyType } from "@/data/bodyType";
@@ -21,20 +22,22 @@ const CarPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     console.log(error.message);
   }
 
-  const body = bodyType[data.model].find(
+  const body = bodyType[data.model]?.find(
     (item) => item.id === data!.bodyType
   )?.name;
 
-  const fuel = fuelType[data.model].find(
+  const fuel = fuelType[data.model]?.find(
     (item) => item.id === data!.fuelType
   )?.name;
 
-  const transmission = transmissionType[data.model].find(
+  const transmission = transmissionType[data.model]?.find(
     (item) => item.id === data!.transmissionType
   )?.name;
 
   const carImage =
     "https://public.readdy.ai/ai/img_res/f0d671a43cf44c11de0f5fabf30b6f55.jpg";
+
+  console.log(data);
 
   return (
     <div className="w-full">
@@ -44,7 +47,7 @@ const CarPage = async ({ params }: { params: Promise<{ id: string }> }) => {
             {/* Image */}
             <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-6">
               <img
-                src={carImage}
+                src={data.photo || carImage}
                 alt="Car image"
                 className="w-full h-full object-cover"
               />
@@ -90,7 +93,7 @@ const CarPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
               {/* Phone Number */}
               <div className="bg-gray-50 p-4 rounded-lg min-w-[200px]">
-                <div className="text-lg font-semibold">{data.phoneNumber}</div>
+                <ContactButton phoneNumber={data.phoneNumber} />
               </div>
             </div>
 

@@ -26,6 +26,7 @@ import { bodyType } from "@/data/bodyType";
 import { fuelType } from "@/data/fuelType";
 import { regions } from "@/data/regions";
 import { useRouter } from "next/navigation";
+import CarImageUploader from "@/components/shared/CarImageUploader";
 
 const Create: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -48,7 +49,7 @@ const Create: React.FC = () => {
 
   const [isFormFilled, setIsFormFilled] = useState(false);
 
-  const handleSelectChange = (name: string, value: string | boolean) => {
+  const handleSelectChange = (name: string, value: string | boolean | null) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -85,7 +86,7 @@ const Create: React.FC = () => {
 
       console.log(data);
 
-      // router.push("/");
+      router.push("/");
     } catch (error: any) {
       console.log(error.message);
     }
@@ -128,9 +129,6 @@ const Create: React.FC = () => {
       setIsLoading(false);
     }, 1500);
   };
-
-  const carImage =
-    "https://public.readdy.ai/ai/img_res/f0d671a43cf44c11de0f5fabf30b6f55.jpg";
 
   useEffect(() => {
     handleSelectChange("model", "");
@@ -181,6 +179,10 @@ const Create: React.FC = () => {
       formData.price,
     ]
   );
+
+  const handleImagesChange = (images: string | null) => {
+    handleSelectChange("photo", images);
+  };
 
   return (
     <div className="container">
@@ -463,8 +465,10 @@ const Create: React.FC = () => {
           {/* Photo section */}
           <div>
             <h2 className="text-lg font-medium mb-4">Car images</h2>
-
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="max-w-[700px] mx-auto">
+              <CarImageUploader onImageChange={handleImagesChange} />
+            </div>
+            {/* <div className="grid grid-cols-3 gap-4 mb-4">
               <div className="relative aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
                 <img
                   src={carImage}
@@ -481,9 +485,9 @@ const Create: React.FC = () => {
               <div className="aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
                 <i className="fas fa-plus text-gray-400 text-2xl"></i>
               </div>
-            </div>
+            </div> */}
 
-            <div className="flex items-center justify-center">
+            {/* <div className="flex items-center justify-center">
               <Button
                 variant="outline"
                 className="!rounded-button text-green-600 border-green-600 hover:bg-green-50 whitespace-nowrap"
@@ -491,7 +495,7 @@ const Create: React.FC = () => {
                 <i className="fas fa-upload mr-2"></i>
                 Upload image
               </Button>
-            </div>
+            </div> */}
           </div>
 
           <Separator />
