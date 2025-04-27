@@ -2,55 +2,64 @@ import pandas as pd
 import numpy as np
 import re
 
-# Load the raw data
-df = pd.read_json('/Users/maryam/Desktop/Auto-Deal-main/ml/data/car_data.json')
+# Paths
+RAW_JSON  = '/Users/maryam/Desktop/Auto-Deal-main/ml/data/car_data.json'
+CLEAN_CSV = '/Users/maryam/Desktop/Auto-Deal-main/ml/data/cleaned_car_data.csv'
 
-def clean_engine(engine):
-    if isinstance(engine, str):
-        # Keep only numbers
-        cleaned_engine = re.sub(r"[^\d]", "", engine)
-        return int(cleaned_engine) if cleaned_engine else None
-    return engine
-df['engine'] = df['engine'].apply(clean_engine)
+# Columns to keep (excluding 'engine' since it's not present)
+KEEP_COLS = [
+    'category_name', 'price', 'model', 'car_type',
+    'year', 'distance', 'gear_type', 'color',
+    'vehicle_type'
+]
 
-# Clean price column
-def clean_price(price):
-    if isinstance(price, str):
-        # Remove any non-numeric characters (including spaces and currency symbols)
-        cleaned_price = re.sub(r"[^\d]", "", price)
-        # Convert the cleaned price to an integer
-        return int(cleaned_price) if cleaned_price != '' else np.nan
-    return np.nan
+def clean_data():
+    # 1. Load raw JSON
+    df = pd.read_json(RAW_JSON)
 
-df['price'] = df['price'].apply(clean_price)
+    # 2. Drop listings priced in UZS (sum) by detecting 'UZS' or 'сум'
+    mask_uzs = df['price'].str.contains(r'UZS|сум', case=False, na=False)
+    print(f"Dropping {mask_uzs.sum()} rows priced in UZS/soum…")
+    df = df.loc[~mask_uzs].copy()
 
-def clean_mileage(distance):
-    if isinstance(distance, str):
-        distance = distance.replace(' ', '').replace('км', '')
-        try:
-            return int(distance)
-        except ValueError:
-            return 0  # or np.nan if you prefer
-    elif pd.isna(distance):
-        return 0  # or np.nan
-    else:
-        return int(distance)
+    # 3. Clean the price column (extract digits)
+    def clean_price(p):
+        if isinstance(p, str):
+            cleaned = re.sub(r"[^0-9]", "", p)
+            return int(cleaned) if cleaned else np.nan
+        return np.nan
 
-# Apply the cleaning function to the mileage column
-df['distance'] = df['distance'].apply(clean_mileage)
+    df['price'] = df['price'].apply(clean_price)
 
-# Drop rows with missing or zero prices
-df = df[df['price'] > 0]
+    # 4. Clean the distance/mileage column
+    def clean_mileage(d):
+        if isinstance(d, str):
+            s = d.replace(' ', '').replace('км', '')
+            try:
+                return int(s)
+            except ValueError:
+                return np.nan
+        return np.nan
 
+    df['distance'] = df['distance'].apply(clean_mileage)
 
-# Drop other unnecessary columns (example columns to drop)
-columns_to_drop = ['num', 'title', 'ad_id', 'publication_type', 'date_of_publication', 'product_link', 'description', 'status']
-df = df.drop(columns=columns_to_drop)
+    # 5. Drop rows with invalid price or distance
+    df = df[df['price'].notna() & (df['price'] > 0)]
+    df = df[df['distance'].notna() & (df['distance'] >= 0)]
 
-# Optionally, you can reset the index after dropping rows
-df = df.reset_index(drop=True)
+    # 6. Keep only the specified columns
+    existing = [c for c in KEEP_COLS if c in df.columns]
+    missing = set(KEEP_COLS) - set(existing)
+    if missing:
+        print(f"⚠️  Missing columns, skipped: {missing}")
+    df = df[existing]
 
-# Save the cleaned data to a new CSV file
-df.to_csv('/Users/maryam/Desktop/Auto-Deal-main/ml/data/cleaned_car_data.csv', index=False)
+    # 7. Reset index
+    df = df.reset_index(drop=True)
 
-print(" Cleaned dataset saved to 'data/cleaned_car_data.csv'")
+    # 8. Save cleaned dataset
+    df.to_csv(CLEAN_CSV, index=False)
+    print(f"Cleaned dataset saved to '{CLEAN_CSV}'")
+
+if __name__ == '__main__':
+    clean_data()
