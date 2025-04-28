@@ -38,6 +38,33 @@ const App: React.FC = () => {
     previousOwners: "",
     region: "",
   });
+  const [isFormFilled, setIsFormFilled] = useState(false);
+  useEffect(
+    () =>
+      setIsFormFilled(
+        !!formData.brand &&
+          !!formData.bodyType &&
+          !!formData.color &&
+          !!formData.fuelType &&
+          !!formData.model &&
+          !!Number(formData.previousOwners) &&
+          !!formData.region &&
+          !!formData.transmissionType &&
+          !!formData.year
+      ),
+    [
+      formData.brand,
+      formData.bodyType,
+      formData.color,
+      formData.fuelType,
+      formData.kilometers,
+      formData.model,
+      formData.previousOwners,
+      formData.region,
+      formData.transmissionType,
+      formData.year,
+    ]
+  );
 
   const handleColorSelect = (colorId: string) => {
     setSelectedColor(colorId);
@@ -57,27 +84,34 @@ const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const handleAnalyzeSubmit = async () => {
     setIsLoading(true);
 
     try {
+      // const reqBody = {
+      //   brand: formData.brand,
+      //   model: formData.model,
+      //   year: parseInt(formData.year),
+      //   bodyType: formData.bodyType,
+      //   fuelType: formData.fuelType,
+      //   transmissionType: formData.transmissionType,
+      //   kilometers: parseInt(formData.kilometers),
+      //   color: formData.color,
+      //   description: formData.description
+      // };
+
+      const dataToSend = {
+        ...formData,
+      };
+
+      console.log(dataToSend);
+
       const response = await fetch(
         "http://localhost:8000/api/v1/ads/predict-price",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            brand: formData.brand,
-            model: formData.model,
-            year: parseInt(formData.year),
-            body_type: formData.bodyType,
-            fuel_type: formData.fuelType,
-            transmission_type: formData.transmissionType,
-            distance: parseInt(formData.kilometers),
-            color: formData.color,
-            previous_owners: parseInt(formData.previousOwners || "0"),
-            region: formData.region,
-          }),
+          body: JSON.stringify(dataToSend),
         }
       );
 
@@ -370,9 +404,9 @@ const App: React.FC = () => {
 
         <div className="mt-8 flex justify-center">
           <Button
-            onClick={handleSubmit}
+            onClick={handleAnalyzeSubmit}
             className="bg-[#38A65B] text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer"
-            disabled={isLoading}
+            disabled={!isFormFilled || isLoading}
           >
             {isLoading ? (
               <>
