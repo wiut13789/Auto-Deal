@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1 import car_ads
+from server.app.api.v1 import car_ads
 
 # Create main API router
 router = APIRouter()

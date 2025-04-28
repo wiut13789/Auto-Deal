@@ -34,9 +34,6 @@ class CarAdBase(BaseModel):
     year: str
 
 
-
-
-
 class CarAdCreate(CarAdBase):
     model_config = ConfigDict(json_encoders={ObjectId: str}, populate_by_name=True)
 
@@ -55,3 +52,13 @@ class CarAdResponse(CarAdBase):
         if "_id" in data:
             data["_id"] = str(data["_id"])
         return cls(**data)
+
+class CarAdPredict(BaseModel):
+    bodyType: str
+    brand: str
+    color: str
+    fuelType: str
+    kilometers: str
+    model: str
+    transmissionType: str
+    year: str

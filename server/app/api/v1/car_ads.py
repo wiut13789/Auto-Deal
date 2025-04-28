@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from motor.core import AgnosticDatabase
-from app.models.cars import CarAdCreate, CarAdResponse
-from app.services.car_ad_service import CarAdService
-from app.core.database import get_db
+from server.app.models.cars import CarAdCreate, CarAdResponse, CarAdPredict
+from server.app.services.car_ad_service import CarAdService
+from server.app.core.database import get_db
+from fastapi import HTTPException
+
+from ml.autodeal_ml.predict import predict_price
+
 
 router = APIRouter(prefix="/ads", tags=["Car Ads"])
 
@@ -50,7 +54,22 @@ async def get_ad(
     return await service.get_ad(db=db, ad_id=ad_id)
 
 
-# @router.get(
-#     "/get_ml_analysis",
-#     response_model=
-# )
+@router.delete("/delete/{ad_id}", summary="Delete car ad by id")
+async def delete_ad(
+    ad_id: str,
+    db: AgnosticDatabase = Depends(get_db),
+    service: CarAdService = Depends(),
+):
+    return await service.delete_ad(db=db, ad_id=ad_id)
+
+
+
+@router.post("/predict-price", summary="Predict car price")
+async def predict_car_price(request: CarAdPredict):
+    predict_data = request.model_dump()
+    try:
+        predicted_price = predict_price(predict_data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    return {"predicted_price": predicted_price}

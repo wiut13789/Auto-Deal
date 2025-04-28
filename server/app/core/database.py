@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.core.config import settings
+from server.app.core.config import settings
 
 
 async def get_db():

@@ -57,42 +57,42 @@ const App: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsLoading(true);
 
-    // Simulate API call with setTimeout
-    setTimeout(() => {
-      // Calculate a sample price based on inputs
-      const basePrice = 25000;
-      const yearFactor = (2025 - parseInt(formData.year)) * 1000;
-      const kmFactor = parseInt(formData.kilometers) * 0.05;
-      const ownersFactor = formData.previousOwners
-        ? parseInt(formData.previousOwners) * 1500
-        : 0;
+    try {
+      const response = await fetch(
+        "http://localhost:8000/api/v1/ads/predict-price",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            brand: formData.brand,
+            model: formData.model,
+            year: parseInt(formData.year),
+            body_type: formData.bodyType,
+            fuel_type: formData.fuelType,
+            transmission_type: formData.transmissionType,
+            distance: parseInt(formData.kilometers),
+            color: formData.color,
+            previous_owners: parseInt(formData.previousOwners || "0"),
+            region: formData.region,
+          }),
+        }
+      );
 
-      let fuelTypeFactor = 0;
-      switch (formData.fuelType) {
-        case "electric":
-          fuelTypeFactor = 5000;
-          break;
-        case "hybrid":
-          fuelTypeFactor = 3000;
-          break;
-        case "diesel":
-          fuelTypeFactor = 1000;
-          break;
-        default:
-          fuelTypeFactor = 0;
+      if (!response.ok) {
+        throw new Error("Prediction request failed");
       }
 
-      const calculatedPrice =
-        basePrice - yearFactor - kmFactor - ownersFactor + fuelTypeFactor;
-      const finalPrice = Math.max(calculatedPrice, 1000);
-
-      setPredictedPrice(finalPrice);
+      const data = await response.json();
+      setPredictedPrice(data.predicted_price);
       setShowResult(true);
+    } catch (error) {
+      console.error("Error fetching prediction:", error);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   useEffect(() => {
@@ -318,7 +318,7 @@ const App: React.FC = () => {
                           ? "ring-2 ring-offset-2 ring-green-500"
                           : ""
                       }`}
-                      onClick={() => handleColorSelect(color.id)}
+                      onClick={() => handleSelectChange("color", color.id)}
                     />
                   ))}
                 </div>

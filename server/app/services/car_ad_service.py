@@ -1,7 +1,6 @@
 from fastapi import HTTPException, status
 from bson import ObjectId
-from app.models.cars import CarAdCreate, CarAdResponse
-from motor.core import AgnosticBase
+from server.app.models.cars import CarAdCreate, CarAdResponse
 
 
 class CarAdService:
@@ -34,6 +33,23 @@ class CarAdService:
         ad_id,
     ):
         ad = await db.ads.find_one({"_id": ObjectId(ad_id)})
-        if ad:
-            ad["_id"] = str(ad["_id"])
+        if ad is None:
+            HTTPException(status_code=404, detail="Car ad not found")
+
+        ad["_id"] = str(ad["_id"])
         return ad
+
+    async def delete_ad(
+        self,
+        db,
+        ad_id,
+    ):
+        if not ObjectId.is_valid(ad_id):
+            raise HTTPException(status_code=400, detail="Invalid ID format")
+
+        result = await db.ads.delete_one({"_id": ObjectId(ad_id)})
+
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Car ad not found")
+
+        return {"message": "Car ad successfully deleted"}

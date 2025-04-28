@@ -59,7 +59,7 @@ const Create: React.FC = () => {
 
   const router = useRouter();
 
-  const handleSubmit = async () => {
+  const handleCreateSubmit = async () => {
     try {
       if (!isFormFilled) return;
 
@@ -92,42 +92,50 @@ const Create: React.FC = () => {
     }
   };
 
-  const analyzeHandler = () => {
+  const handleAnalyzeSubmit = async () => {
     setIsLoading(true);
 
-    // Simulate API call with setTimeout
-    setTimeout(() => {
-      // Calculate a sample price based on inputs
-      const basePrice = 25000;
-      const yearFactor = (2025 - Number(formData.year)) * 1000;
-      const kmFactor = Number(formData.kilometers) * 0.05;
-      const ownersFactor = formData.previousOwners
-        ? parseInt(formData.previousOwners) * 1500
-        : 0;
+    try {
+      // const reqBody = {
+      //   brand: formData.brand,
+      //   model: formData.model,
+      //   year: parseInt(formData.year),
+      //   bodyType: formData.bodyType,
+      //   fuelType: formData.fuelType,
+      //   transmissionType: formData.transmissionType,
+      //   kilometers: parseInt(formData.kilometers),
+      //   color: formData.color,
+      //   description: formData.description
+      // };
 
-      let fuelTypeFactor = 0;
-      switch (formData.fuelType) {
-        case "electric":
-          fuelTypeFactor = 5000;
-          break;
-        case "hybrid":
-          fuelTypeFactor = 3000;
-          break;
-        case "diesel":
-          fuelTypeFactor = 1000;
-          break;
-        default:
-          fuelTypeFactor = 0;
+      const dataToSend = {
+        ...formData,
+        price: Number(formData.price),
+      };
+
+      console.log(dataToSend);
+
+      const response = await fetch(
+        "http://localhost:8000/api/v1/ads/predict-price",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSend),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Prediction request failed");
       }
 
-      const calculatedPrice =
-        basePrice - yearFactor - kmFactor - ownersFactor + fuelTypeFactor;
-      const finalPrice = Math.max(calculatedPrice, 1000);
-
-      setPredictedPrice(finalPrice);
+      const data = await response.json();
+      setPredictedPrice(data.predicted_price);
       setShowResult(true);
+    } catch (error) {
+      console.error("Error fetching prediction:", error);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   useEffect(() => {
@@ -468,34 +476,6 @@ const Create: React.FC = () => {
             <div className="max-w-[700px] mx-auto">
               <CarImageUploader onImageChange={handleImagesChange} />
             </div>
-            {/* <div className="grid grid-cols-3 gap-4 mb-4">
-              <div className="relative aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                <img
-                  src={carImage}
-                  alt="BMW M5"
-                  className="w-full h-full object-cover rounded-lg"
-                />
-                <button className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-sm">
-                  <i className="fas fa-times text-gray-500"></i>
-                </button>
-              </div>
-              <div className="aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                <i className="fas fa-plus text-gray-400 text-2xl"></i>
-              </div>
-              <div className="aspect-[4/3] bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                <i className="fas fa-plus text-gray-400 text-2xl"></i>
-              </div>
-            </div> */}
-
-            {/* <div className="flex items-center justify-center">
-              <Button
-                variant="outline"
-                className="!rounded-button text-green-600 border-green-600 hover:bg-green-50 whitespace-nowrap"
-              >
-                <i className="fas fa-upload mr-2"></i>
-                Upload image
-              </Button>
-            </div> */}
           </div>
 
           <Separator />
@@ -591,7 +571,7 @@ const Create: React.FC = () => {
           <Button
             type="button"
             disabled={!isFormFilled}
-            onClick={handleSubmit}
+            onClick={handleCreateSubmit}
             className="bg-slate-400 text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer disabled:cursor-not-allowed disabled:opacity-75"
           >
             Create advertisement
@@ -601,7 +581,7 @@ const Create: React.FC = () => {
         <div className="mt-8 flex justify-center">
           <Button
             type="button"
-            onClick={analyzeHandler}
+            onClick={handleAnalyzeSubmit}
             className="bg-[#38A65B] text-white py-6 px-10 text-lg font-medium !rounded-button whitespace-nowrap cursor-pointer"
             disabled={isLoading}
           >
