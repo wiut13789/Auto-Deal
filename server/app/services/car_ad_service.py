@@ -53,3 +53,33 @@ class CarAdService:
             raise HTTPException(status_code=404, detail="Car ad not found")
 
         return {"message": "Car ad successfully deleted"}
+
+    # async def update_ad(
+    #     self,
+    #     db,
+    #     ad_id: str,
+    #     update_data: dict,
+    # ):
+    #     # 1. ID format validation
+    #     if not ObjectId.is_valid(ad_id):
+    #         raise HTTPException(status_code=400, detail="Invalid ID format")
+
+    #     # 2. Perform the update
+    #     result = await db.ads.update_one(
+    #         {"_id": ObjectId(ad_id)},
+    #         {"$set": update_data}
+    #     )
+
+    #     # 3. If no document matched, it didn’t exist
+    #     if result.matched_count == 0:
+    #         raise HTTPException(status_code=404, detail="Car ad not found")
+
+    #     # 4. Optionally, fetch and return the updated document
+    #     updated_ad = await db.ads.find_one({"_id": ObjectId(ad_id)})
+    #     if not updated_ad:
+    #         # This should rarely happen, but guard just in case
+    #         raise HTTPException(status_code=404, detail="Car ad not found after update")
+
+    #     # Convert ObjectId to str if needed before returning
+    #     updated_ad["id"] = str(updated_ad.pop("_id"))
+    #     return updated_ad
