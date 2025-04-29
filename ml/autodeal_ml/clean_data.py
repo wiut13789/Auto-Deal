@@ -3,8 +3,8 @@ import numpy as np
 import re
 
 # Paths
-RAW_JSON  = '/Users/maryam/Desktop/Auto-Deal-main/ml/data/car_data.json'
-CLEAN_CSV = '/Users/maryam/Desktop/Auto-Deal-main/ml/data/cleaned_car_data.csv'
+RAW_JSON  = '/Users/maryam/Desktop/Auto-Deal-main/ml/autodeal_ml/data/car_data.json'
+CLEAN_CSV = '/Users/maryam/Desktop/Auto-Deal-main/ml/autodeal_ml/data/cleaned_car_data.csv'
 
 # Columns to keep (excluding 'engine' since it's not present)
 KEEP_COLS = [
